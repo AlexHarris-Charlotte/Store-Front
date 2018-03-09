@@ -32,13 +32,13 @@ INSERT INTO products(product_name, department_name, price, stock_quantity)
 VALUES ("Pants", "Apparel", 35.99, 75);
 
 INSERT INTO products(product_name, department_name, price, stock_quantity)
-VALUES ("Refridgeratro", "Appliances", 449.99, 30);
+VALUES ("Refrigerator", "Appliances", 449.99, 30);
 
 INSERT INTO products(product_name, department_name, price, stock_quantity)
 VALUES ("Stove", "Appliances", 399.99, 25);
 
 INSERT INTO products(product_name, department_name, price, stock_quantity)
-VALUES ("Waser", "Appliances", 349.99, 20);
+VALUES ("Washer", "Appliances", 349.99, 20);
 
 INSERT INTO products(product_name, department_name, price, stock_quantity)
 VALUES ("Dryer", "Appliances", 349.99, 20);
