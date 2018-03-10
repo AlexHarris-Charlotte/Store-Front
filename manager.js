@@ -30,7 +30,7 @@ function promptManager() {
         switch (managerResponse){
             case 'View Products for Sale':
                 viewProducts();
-            break;
+                break;
             case 'View Low Inventory':
                 lowInventory();
                 break;
@@ -38,11 +38,9 @@ function promptManager() {
                 addToInventory();                
                 break;
             case 'Add New Product':
-                console.log(managerResponse);
-                // call function here
+                addNewProductPrompt();
                 break;
         }
-        connection.end();
     });
 };
 
@@ -54,6 +52,8 @@ function viewProducts() {
             console.log(`ID: ${results[i].item_id} | Product: ${results[i].product_name} | Price: ${results[i].price} | Stock: ${results[i].stock_quantity}`);
         }
     });
+    connection.end();
+
 }
 
 function lowInventory() {
@@ -65,6 +65,8 @@ function lowInventory() {
             console.log(`${results[i].product_name} has less than ${inventory} units in stock.`);
         }
     });
+    connection.end();
+
 }
 
 function addToInventory() {
@@ -92,19 +94,19 @@ function increaseInventoryPrompt(items_array) {
             name     : 'increaseNumber'
         }
     ]).then(answers => {
+        const currentQuantity = parseInt(answers.inventoryIncrease.match(/\d+/));
         const itemToUpdate = answers.inventoryIncrease.split(':')[0];
-        console.log(itemToUpdate, typeof(itemToUpdate));
-        const increaseNumber = answers.increaseNumber;
-        updateInventory(itemToUpdate, increaseNumber);
+        const increaseNumber = parseInt(answers.increaseNumber);
+        updateInventory(itemToUpdate, increaseNumber, currentQuantity);
     })
 }
 
-function updateInventory(item, number) {
+function updateInventory(item, number, currentStock) {
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
           {
-            stock_quantity: number
+            stock_quantity: currentStock + number
           },
           {
             product_name: item
@@ -114,12 +116,59 @@ function updateInventory(item, number) {
         console.log(result.affectedRows + " products updated!\n");
         
     });
+    connection.end();
+
 }
 
 
+function addNewProductPrompt() {
+    inquirer.prompt([
+        {
+            type     : 'input',
+            message  : 'What New Item would you like to add?',
+            name     : 'newItem',
+        },
 
-// Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store. (update)
-// Add New Product, it should allow the manager to add a completely new product to the store. (Create)
+        {
+            type     : 'input',
+            message  : 'What Department does this item belong to?',
+            name     : 'itemDepartment'
+        },
+
+        {
+            type     : 'input',
+            message  : 'What is the default price for this item?',
+            name     : 'itemPrice'
+        },
+
+        {
+            type     : 'input',
+            message  : 'How many of these items would you like to place in stock?',
+            name     : 'stockQuantity'
+        }
+    ]).then(answers => {
+        const newItem = answers.newItem;
+        const itemDepartment = answers.itemDepartment;
+        const itemPrice = parseFloat(answers.itemPrice);
+        const itemStock = parseFloat(answers.stockQuantity);
+        addNewProduct(newItem, itemDepartment, itemPrice, itemStock);
+    })
+}
+
+function addNewProduct(item, dept, price, stock) {
+    connection.query(
+        "INSERT INTO products SET ?",
+        {
+          product_name: item,
+          department_name: dept,
+          price: price,
+          stock_quantity: stock
+        },
+      );
+      connection.end();
+
+}
+
 
 
 
